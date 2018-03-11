@@ -8,6 +8,8 @@ namespace WinForms_Async
 {
     public partial class BestProductReport : Form
     {
+        private const string ConnectionString = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=AdventureWorks2017;Data Source=localhost\\SQLEXPRESS";
+
         public BestProductReport()
         {
             InitializeComponent();
@@ -15,21 +17,37 @@ namespace WinForms_Async
 
         private void btnRaport_Click(object sender, EventArgs e)
         {
-            using (var connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=AdventureWorks2017;Data Source=localhost\\SQLEXPRESS"))
+            using (var connection = CreateOpenConnection())
             {
-                connection.Open();
-
-                var queryContent = File.ReadAllText("./Report.sql");
-                var reportCommand = new SqlCommand(queryContent);
-                reportCommand.Connection = connection;
+                SqlCommand reportCommand = CreateReportCommand(connection);
 
                 var resultReader = reportCommand.ExecuteReader();
 
-                var resultTable = new DataTable();
-                resultTable.Load(resultReader);
-
-                resultGrid.DataSource = resultTable;
+                resultGrid.DataSource = LoadDataIntoDataTable(resultReader);
             }
+        }
+
+        private static DataTable LoadDataIntoDataTable(SqlDataReader resultReader)
+        {
+            var resultTable = new DataTable();
+            resultTable.Load(resultReader);
+            return resultTable;
+        }
+
+        private static SqlConnection CreateOpenConnection()
+        {
+            var connection = new SqlConnection(ConnectionString);
+            connection.Open();
+
+            return connection;
+        }
+
+        private static SqlCommand CreateReportCommand(SqlConnection connection)
+        {
+            var queryContent = File.ReadAllText("./Report.sql");
+            var reportCommand = new SqlCommand(queryContent);
+            reportCommand.Connection = connection;
+            return reportCommand;
         }
     }
 }
