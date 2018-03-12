@@ -30,6 +30,7 @@
         {
             this.resultGrid = new System.Windows.Forms.DataGridView();
             this.btnRaport = new System.Windows.Forms.Button();
+            this.btnThread = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.resultGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -51,11 +52,22 @@
             this.btnRaport.UseVisualStyleBackColor = true;
             this.btnRaport.Click += new System.EventHandler(this.btnRaport_Click);
             // 
+            // btnThread
+            // 
+            this.btnThread.Location = new System.Drawing.Point(95, 454);
+            this.btnThread.Name = "btnThread";
+            this.btnThread.Size = new System.Drawing.Size(100, 23);
+            this.btnThread.TabIndex = 2;
+            this.btnThread.Text = "Raport w wątku";
+            this.btnThread.UseVisualStyleBackColor = true;
+            this.btnThread.Click += new System.EventHandler(this.btnThread_Click);
+            // 
             // BestProductReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(924, 488);
+            this.Controls.Add(this.btnThread);
             this.Controls.Add(this.btnRaport);
             this.Controls.Add(this.resultGrid);
             this.Name = "BestProductReport";
@@ -69,5 +81,6 @@
 
         private System.Windows.Forms.DataGridView resultGrid;
         private System.Windows.Forms.Button btnRaport;
+        private System.Windows.Forms.Button btnThread;
     }
 }
