@@ -51,27 +51,14 @@ namespace WinForms_Async
             return reportCommand;
         }
 
+        private SynchronizationContext syncContext;
         private void btnThread_Click(object sender, EventArgs e)
         {
-            newThreadResult = null;
+            syncContext = SynchronizationContext.Current;
             var thread = new Thread(GenerateReportInNewThread);
             thread.Start();
-
-            var timer = new System.Windows.Forms.Timer();
-            timer.Interval = 500;
-            timer.Tick += (s, args) =>
-            {
-                if (newThreadResult != null)
-                {
-                    resultGrid.DataSource = newThreadResult;
-                    timer.Stop();
-                }
-            };
-
-            timer.Start();
         }
-
-        DataTable newThreadResult = null;
+        
         private void GenerateReportInNewThread()
         {
             using (var connection = CreateOpenConnection())
@@ -80,7 +67,17 @@ namespace WinForms_Async
 
                 var resultReader = reportCommand.ExecuteReader();
 
-                newThreadResult = LoadDataIntoDataTable(resultReader);
+                var newThreadResult = LoadDataIntoDataTable(resultReader);
+
+                syncContext.Post(_ =>
+                {
+                    resultGrid.DataSource = newThreadResult;
+                }, null);
+
+                //resultGrid.BeginInvoke((Action)(() =>
+                //{
+                //    resultGrid.DataSource = newThreadResult;
+                //}));
             }
         }
     }
