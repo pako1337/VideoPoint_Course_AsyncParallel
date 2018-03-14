@@ -51,16 +51,16 @@ namespace WinForms_Async
             return reportCommand;
         }
 
-        private SynchronizationContext syncContext;
         private void btnThread_Click(object sender, EventArgs e)
         {
-            syncContext = SynchronizationContext.Current;
+            var syncContext = SynchronizationContext.Current;
             var thread = new Thread(GenerateReportInNewThread);
-            thread.Start();
+            thread.Start(syncContext);
         }
         
-        private void GenerateReportInNewThread()
+        private void GenerateReportInNewThread(object state)
         {
+            var syncContext = (SynchronizationContext)state;
             using (var connection = CreateOpenConnection())
             {
                 SqlCommand reportCommand = CreateReportCommand(connection);
@@ -69,10 +69,10 @@ namespace WinForms_Async
 
                 var newThreadResult = LoadDataIntoDataTable(resultReader);
 
-                syncContext.Post(_ =>
+                syncContext.Post(dt =>
                 {
-                    resultGrid.DataSource = newThreadResult;
-                }, null);
+                    resultGrid.DataSource = dt;
+                }, newThreadResult);
 
                 //resultGrid.BeginInvoke((Action)(() =>
                 //{
