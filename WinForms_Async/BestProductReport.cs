@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinForms_Async
@@ -100,6 +101,45 @@ namespace WinForms_Async
                     }));
                 }
             });
+        }
+
+        private void btnTask_Click(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                using (var connection = CreateOpenConnection())
+                {
+                    SqlCommand reportCommand = CreateReportCommand(connection);
+
+                    var resultReader = reportCommand.ExecuteReader();
+
+                    var newThreadResult = LoadDataIntoDataTable(resultReader);
+
+                    resultGrid.BeginInvoke((Action)(() =>
+                    {
+                        resultGrid.DataSource = newThreadResult;
+                    }));
+                }
+            });
+        }
+
+        private void btnBeginExecute_Click(object sender, EventArgs e)
+        {
+            var connection = CreateOpenConnection();
+            var command = CreateReportCommand(connection);
+
+            command.BeginExecuteReader(asyncResult =>
+            {
+                var reader = command.EndExecuteReader(asyncResult);
+                var dataTable = LoadDataIntoDataTable(reader);
+
+                resultGrid.BeginInvoke((Action)(() =>
+                {
+                    resultGrid.DataSource = dataTable;
+                }));
+
+                connection.Dispose();
+            }, null);
         }
     }
 }

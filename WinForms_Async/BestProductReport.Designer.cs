@@ -33,6 +33,8 @@
             this.btnRaport = new System.Windows.Forms.Button();
             this.btnThread = new System.Windows.Forms.Button();
             this.btnThreadPool = new System.Windows.Forms.Button();
+            this.btnTask = new System.Windows.Forms.Button();
+            this.btnBeginExecute = new System.Windows.Forms.Button();
             progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.resultGrid)).BeginInit();
             this.SuspendLayout();
@@ -86,11 +88,33 @@
             progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             progressBar1.TabIndex = 4;
             // 
+            // btnTask
+            // 
+            this.btnTask.Location = new System.Drawing.Point(326, 454);
+            this.btnTask.Name = "btnTask";
+            this.btnTask.Size = new System.Drawing.Size(103, 23);
+            this.btnTask.TabIndex = 5;
+            this.btnTask.Text = "Raport z Taska";
+            this.btnTask.UseVisualStyleBackColor = true;
+            this.btnTask.Click += new System.EventHandler(this.btnTask_Click);
+            // 
+            // btnBeginExecute
+            // 
+            this.btnBeginExecute.Location = new System.Drawing.Point(436, 454);
+            this.btnBeginExecute.Name = "btnBeginExecute";
+            this.btnBeginExecute.Size = new System.Drawing.Size(130, 23);
+            this.btnBeginExecute.TabIndex = 6;
+            this.btnBeginExecute.Text = "Begin Execute Reader";
+            this.btnBeginExecute.UseVisualStyleBackColor = true;
+            this.btnBeginExecute.Click += new System.EventHandler(this.btnBeginExecute_Click);
+            // 
             // BestProductReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(924, 488);
+            this.Controls.Add(this.btnBeginExecute);
+            this.Controls.Add(this.btnTask);
             this.Controls.Add(progressBar1);
             this.Controls.Add(this.btnThreadPool);
             this.Controls.Add(this.btnThread);
@@ -109,5 +133,7 @@
         private System.Windows.Forms.Button btnRaport;
         private System.Windows.Forms.Button btnThread;
         private System.Windows.Forms.Button btnThreadPool;
+        private System.Windows.Forms.Button btnTask;
+        private System.Windows.Forms.Button btnBeginExecute;
     }
 }
