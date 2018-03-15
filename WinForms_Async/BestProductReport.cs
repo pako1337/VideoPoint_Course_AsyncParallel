@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -79,6 +80,26 @@ namespace WinForms_Async
                 //    resultGrid.DataSource = newThreadResult;
                 //}));
             }
+        }
+
+        private void btnThreadPool_Click(object sender, EventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                using (var connection = CreateOpenConnection())
+                {
+                    SqlCommand reportCommand = CreateReportCommand(connection);
+
+                    var resultReader = reportCommand.ExecuteReader();
+
+                    var newThreadResult = LoadDataIntoDataTable(resultReader);
+
+                    resultGrid.BeginInvoke((Action)(() =>
+                    {
+                        resultGrid.DataSource = newThreadResult;
+                    }));
+                }
+            });
         }
     }
 }
