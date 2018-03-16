@@ -35,9 +35,21 @@
             this.btnThreadPool = new System.Windows.Forms.Button();
             this.btnTask = new System.Windows.Forms.Button();
             this.btnBeginExecute = new System.Windows.Forms.Button();
+            this.btnAsync = new System.Windows.Forms.Button();
             progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.resultGrid)).BeginInit();
             this.SuspendLayout();
+            // 
+            // progressBar1
+            // 
+            progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            progressBar1.Location = new System.Drawing.Point(12, 11);
+            progressBar1.MarqueeAnimationSpeed = 50;
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new System.Drawing.Size(900, 23);
+            progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            progressBar1.TabIndex = 4;
             // 
             // resultGrid
             // 
@@ -77,17 +89,6 @@
             this.btnThreadPool.UseVisualStyleBackColor = true;
             this.btnThreadPool.Click += new System.EventHandler(this.btnThreadPool_Click);
             // 
-            // progressBar1
-            // 
-            progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            progressBar1.Location = new System.Drawing.Point(12, 11);
-            progressBar1.MarqueeAnimationSpeed = 50;
-            progressBar1.Name = "progressBar1";
-            progressBar1.Size = new System.Drawing.Size(900, 23);
-            progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            progressBar1.TabIndex = 4;
-            // 
             // btnTask
             // 
             this.btnTask.Location = new System.Drawing.Point(326, 454);
@@ -108,11 +109,22 @@
             this.btnBeginExecute.UseVisualStyleBackColor = true;
             this.btnBeginExecute.Click += new System.EventHandler(this.btnBeginExecute_Click);
             // 
+            // btnAsync
+            // 
+            this.btnAsync.Location = new System.Drawing.Point(573, 454);
+            this.btnAsync.Name = "btnAsync";
+            this.btnAsync.Size = new System.Drawing.Size(105, 23);
+            this.btnAsync.TabIndex = 7;
+            this.btnAsync.Text = "Async Raport";
+            this.btnAsync.UseVisualStyleBackColor = true;
+            this.btnAsync.Click += new System.EventHandler(this.btnAsync_Click);
+            // 
             // BestProductReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(924, 488);
+            this.Controls.Add(this.btnAsync);
             this.Controls.Add(this.btnBeginExecute);
             this.Controls.Add(this.btnTask);
             this.Controls.Add(progressBar1);
@@ -135,5 +147,6 @@
         private System.Windows.Forms.Button btnThreadPool;
         private System.Windows.Forms.Button btnTask;
         private System.Windows.Forms.Button btnBeginExecute;
+        private System.Windows.Forms.Button btnAsync;
     }
 }

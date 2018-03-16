@@ -141,5 +141,19 @@ namespace WinForms_Async
                 connection.Dispose();
             }, null);
         }
+
+        private async void btnAsync_Click(object sender, EventArgs e)
+        {
+            using (var connection = CreateOpenConnection())
+            {
+                var command = CreateReportCommand(connection);
+
+                var resultreader = await command.ExecuteReaderAsync();
+
+                var resultTable = LoadDataIntoDataTable(resultreader);
+
+                resultGrid.DataSource = resultTable;
+            }
+        }
     }
 }
