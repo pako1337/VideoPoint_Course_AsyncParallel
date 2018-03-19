@@ -1,0 +1,17 @@
+﻿@using AspNet_Async.Controllers
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@model BestProductsViewModel
+
+<h1>Produkty, z których jesteśmy dumni</h1>
+<ul>
+    @foreach (var product in Model.Products)
+    {
+        <li>@product.Name - @product.ProductNumber</li>
+    }
+</ul>
+
+Total products in offer: @Model.TotalProductsCount
