@@ -45,22 +45,26 @@ namespace AspNet_Async.Controllers
 
         public Task<ActionResult> BestProductsManualAsync()
         {
-            using (var context = new AdventureContext())
-            {
-                return context.Products.Take(5).ToListAsync()
-                    .ContinueWith(productListTask =>
+            var taskCompletionSource = new TaskCompletionSource<ActionResult>();
+
+            var context = new AdventureContext();
+            context.Products.Take(5).ToListAsync()
+                .ContinueWith(productListTask =>
+                {
+                    context.Products.CountAsync()
+                    .ContinueWith(productsCountTask =>
                     {
-                        return context.Products.CountAsync()
-                        .ContinueWith(productsCountTask =>
-                        {
-                            return (ActionResult)View("BestProducts", new BestProductsViewModel
+                        context.Dispose();
+                        taskCompletionSource.SetResult(
+                            View("BestProducts", new BestProductsViewModel
                             {
                                 Products = productListTask.Result,
                                 TotalProductsCount = productsCountTask.Result
-                            });
-                        });
-                    }).Result;
-            }
+                            }));
+                    });
+                });
+
+            return taskCompletionSource.Task;
         }
     }
 }
