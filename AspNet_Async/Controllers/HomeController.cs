@@ -42,5 +42,25 @@ namespace AspNet_Async.Controllers
                 });
             }
         }
+
+        public Task<ActionResult> BestProductsManualAsync()
+        {
+            using (var context = new AdventureContext())
+            {
+                return context.Products.Take(5).ToListAsync()
+                    .ContinueWith(productListTask =>
+                    {
+                        return context.Products.CountAsync()
+                        .ContinueWith(productsCountTask =>
+                        {
+                            return (ActionResult)View("BestProducts", new BestProductsViewModel
+                            {
+                                Products = productListTask.Result,
+                                TotalProductsCount = productsCountTask.Result
+                            });
+                        });
+                    }).Result;
+            }
+        }
     }
 }
