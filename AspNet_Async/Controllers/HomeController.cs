@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using AspNet_Async.Models;
 
@@ -19,6 +21,21 @@ namespace AspNet_Async.Controllers
                 var totalProducts = context.Products.Count();
 
                 return View(new BestProductsViewModel
+                {
+                    Products = products,
+                    TotalProductsCount = totalProducts
+                });
+            }
+        }
+
+        public async Task<ActionResult> BestProductsAsync()
+        {
+            using (var context = new AdventureContext())
+            {
+                var products = await context.Products.Take(5).ToListAsync();
+                var totalProducts = await context.Products.CountAsync();
+
+                return View("BestProducts", new BestProductsViewModel
                 {
                     Products = products,
                     TotalProductsCount = totalProducts
