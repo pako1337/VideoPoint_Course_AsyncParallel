@@ -1,4 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -39,6 +42,23 @@ namespace AspNet_Async.Controllers
                 {
                     Products = products,
                     TotalProductsCount = totalProducts
+                });
+            }
+        }
+
+        public async Task<ActionResult> BestProductsConcurrentQueriesAsync()
+        {
+            using (var context = new AdventureContext())
+            {
+                var productsTask = context.Products.Take(5).ToListAsync();
+                var totalProductsTask = context.Products.CountAsync();
+
+                await Task.WhenAll(productsTask, totalProductsTask);
+
+                return View("BestProducts", new BestProductsViewModel
+                {
+                    Products = productsTask.Result,
+                    TotalProductsCount = totalProductsTask.Result
                 });
             }
         }
