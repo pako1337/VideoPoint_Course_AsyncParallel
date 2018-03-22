@@ -63,6 +63,52 @@ namespace AspNet_Async.Controllers
             }
         }
 
+        public async Task<ActionResult> BestProductsConcurrentReadersAsync()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                var productsCommand = new SqlCommand("SELECT TOP 5 ProductID, Name, ProductNumber FROM Production.Product");
+                productsCommand.Connection = connection;
+                var productsCountCommand = new SqlCommand("SELECT COUNT(*) FROM Production.Product");
+                productsCountCommand.Connection = connection;
+
+                var productsTask = productsCommand.ExecuteReaderAsync()
+                    .ContinueWith(t =>
+                    {
+                        var products = new List<Product>(5);
+                        using (var reader = t.Result)
+                        {
+                            while (reader.Read())
+                            {
+                                products.Add(new Product
+                                {
+                                    ProductID = (int)reader["ProductID"],
+                                    Name = (string)reader["Name"],
+                                    ProductNumber = (string)reader["ProductNumber"]
+                                });
+                            } 
+                        }
+
+                        return products;
+                    });
+
+                var productsCountTask = productsCountCommand.ExecuteScalarAsync()
+                    .ContinueWith(t => (int)t.Result);
+
+                await Task.WhenAll(productsTask, productsCountTask);
+
+                return View("BestProducts", new BestProductsViewModel
+                {
+                    Products = productsTask.Result,
+                    TotalProductsCount = productsCountTask.Result
+                });
+            }
+        }
+
         public Task<ActionResult> BestProductsManualAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<ActionResult>();
