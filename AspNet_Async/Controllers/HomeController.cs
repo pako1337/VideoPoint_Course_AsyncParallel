@@ -90,7 +90,7 @@ namespace AspNet_Async.Controllers
                                     Name = (string)reader["Name"],
                                     ProductNumber = (string)reader["ProductNumber"]
                                 });
-                            } 
+                            }
                         }
 
                         return products;
@@ -131,6 +131,27 @@ namespace AspNet_Async.Controllers
                 });
 
             return taskCompletionSource.Task;
+        }
+
+        public ActionResult BestProductsWithWaitAsync()
+        {
+            var viewModel = BuildViewModelAsync().Result;
+            return View("BestProducts", viewModel);
+        }
+
+        public async Task<BestProductsViewModel> BuildViewModelAsync()
+        {
+            using (var context = new AdventureContext())
+            {
+                var products = await context.Products.Take(5).ToListAsync().ConfigureAwait(false);
+                var totalProducts = await context.Products.CountAsync().ConfigureAwait(false);
+
+                return new BestProductsViewModel
+                {
+                    Products = products,
+                    TotalProductsCount = totalProducts
+                };
+            }
         }
     }
 }
