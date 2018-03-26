@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AspNet_Async.Models;
@@ -151,6 +152,22 @@ namespace AspNet_Async.Controllers
                     Products = products,
                     TotalProductsCount = totalProducts
                 };
+            }
+        }
+
+        [AsyncTimeout(100)]
+        public async Task<ActionResult> BestProductsCancellableAsync(CancellationToken cancellation)
+        {
+            using (var context = new AdventureContext())
+            {
+                var products = await context.Products.Take(5).ToListAsync(cancellation);
+                var totalProducts = await context.Products.CountAsync(cancellation);
+
+                return View("BestProducts", new BestProductsViewModel
+                {
+                    Products = products,
+                    TotalProductsCount = totalProducts
+                });
             }
         }
     }
