@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms_Async", "WinForms_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet_Async", "AspNet_Async\AspNet_Async.csproj", "{7C23CC53-4B83-452F-8381-61DAF727AA2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parallel_Matrixes", "Parallel_Matrixes\Parallel_Matrixes.csproj", "{0A5C1BD7-548E-4100-8F14-8E4997EF08F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7C23CC53-4B83-452F-8381-61DAF727AA2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C23CC53-4B83-452F-8381-61DAF727AA2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C23CC53-4B83-452F-8381-61DAF727AA2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A5C1BD7-548E-4100-8F14-8E4997EF08F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A5C1BD7-548E-4100-8F14-8E4997EF08F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A5C1BD7-548E-4100-8F14-8E4997EF08F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A5C1BD7-548E-4100-8F14-8E4997EF08F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
