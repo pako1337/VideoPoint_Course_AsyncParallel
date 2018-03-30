@@ -16,6 +16,7 @@ namespace Parallel_Matrixes
             var m2 = MatrixGenerator.GenerateMatrix(matrixSize);
 
             var baseTime = Measure(() => m1.Multiply(m2));
+            processingTimes["Parallel Rows"] = Measure(() => m1.MultiplyParallelRows(m2));
 
             PrintSpeedup(baseTime, processingTimes);
         }
