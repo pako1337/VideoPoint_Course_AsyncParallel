@@ -58,5 +58,49 @@ namespace Parallel_Matrixes
 
             return new Matrix(resultMatrix);
         }
+
+        public Matrix MultiplyParallelRowsCols(Matrix other)
+        {
+            var resultMatrix = new int[Rows][];
+            Parallel.For(0, Rows, i =>
+            {
+                resultMatrix[i] = new int[other.Cols];
+
+                Parallel.For(0, other.Cols, j =>
+                {
+                    var result = 0;
+                    for (int k = 0; k < Cols; k++)
+                    {
+                        result += Values[i][k] * other.Values[k][j];
+                    }
+
+                    resultMatrix[i][j] = result;
+                });
+            });
+
+            return new Matrix(resultMatrix);
+        }
+
+        public Matrix MultiplyParallelCols(Matrix other)
+        {
+            var resultMatrix = new int[Rows][];
+            for(var i = 0; i < Rows; i++)
+            {
+                resultMatrix[i] = new int[other.Cols];
+
+                Parallel.For(0, other.Cols, j =>
+                {
+                    var result = 0;
+                    for (int k = 0; k < Cols; k++)
+                    {
+                        result += Values[i][k] * other.Values[k][j];
+                    }
+
+                    resultMatrix[i][j] = result;
+                });
+            }
+
+            return new Matrix(resultMatrix);
+        }
     }
 }
