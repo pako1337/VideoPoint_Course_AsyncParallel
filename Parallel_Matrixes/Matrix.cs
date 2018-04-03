@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Parallel_Matrixes
 {
@@ -99,6 +100,37 @@ namespace Parallel_Matrixes
                     resultMatrix[i][j] = result;
                 });
             }
+
+            return new Matrix(resultMatrix);
+        }
+
+        public Matrix MultiplyParallelRowManual(Matrix other)
+        {
+            var resultMatrix = new int[Rows][];
+            var tasks = new List<Task>(Rows);
+
+            for (int i = 0; i < Rows; i++)
+            {
+                var counter = i;
+                var task = Task.Run(() =>
+                {
+                    resultMatrix[counter] = new int[other.Cols];
+
+                    for (int j = 0; j < other.Cols; j++)
+                    {
+                        var result = 0;
+                        for (int k = 0; k < Cols; k++)
+                        {
+                            result += Values[counter][k] * other.Values[k][j];
+                        }
+
+                        resultMatrix[counter][j] = result;
+                    }
+                });
+                tasks.Add(task);
+            }
+
+            Task.WaitAll(tasks.ToArray());
 
             return new Matrix(resultMatrix);
         }
