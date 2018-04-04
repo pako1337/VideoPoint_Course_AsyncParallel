@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static System.Console;
 using static Parallel_Matrixes.Measurements;
 
@@ -8,10 +10,48 @@ namespace Parallel_Matrixes
     internal static class Program
     {
         private static int matrixSize = 500;
-        private static Dictionary<string, TimeSpan> processingTimes = new Dictionary<string, TimeSpan>();
 
         private static void Main()
         {
+            //TwoMatrixesMultiplication();
+
+            ListOfMatrixesMultiplication();
+        }
+
+        private static void ListOfMatrixesMultiplication()
+        {
+            var processingTimes = new Dictionary<string, TimeSpan>();
+            var m1 = MatrixGenerator.GenerateMatrix(matrixSize);
+            var matrixes = Enumerable.Range(0, 20)
+                .Select(_ => MatrixGenerator.GenerateMatrix(matrixSize))
+                .ToList();
+
+            var baseTime = Measure(() => MultiplyAll(m1, matrixes));
+
+            processingTimes["Parallel Foreach"] = Measure(() => MultiplyAllParallel(m1, matrixes));
+
+            PrintSpeedup(baseTime, processingTimes);
+        }
+
+        private static void MultiplyAll(Matrix m1, List<Matrix> matrixes)
+        {
+            foreach (var m2 in matrixes)
+            {
+                m1.Multiply(m2);
+            }
+        }
+
+        private static void MultiplyAllParallel(Matrix m1, List<Matrix> matrixes)
+        {
+            Parallel.ForEach(matrixes, m2 =>
+            {
+                m1.Multiply(m2);
+            });
+        }
+
+        private static void TwoMatrixesMultiplication()
+        {
+            var processingTimes = new Dictionary<string, TimeSpan>();
             var m1 = MatrixGenerator.GenerateMatrix(matrixSize);
             var m2 = MatrixGenerator.GenerateMatrix(matrixSize);
 
