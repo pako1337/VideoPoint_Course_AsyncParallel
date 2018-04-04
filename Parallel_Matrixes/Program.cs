@@ -29,6 +29,7 @@ namespace Parallel_Matrixes
             var baseTime = Measure(() => MultiplyAll(m1, matrixes));
 
             processingTimes["Parallel Foreach"] = Measure(() => MultiplyAllParallel(m1, matrixes));
+            processingTimes["Plinq"] = Measure(() => MultiplyAllPlinq(m1, matrixes));
 
             PrintSpeedup(baseTime, processingTimes);
         }
@@ -47,6 +48,13 @@ namespace Parallel_Matrixes
             {
                 m1.Multiply(m2);
             });
+        }
+
+        private static void MultiplyAllPlinq(Matrix m1, List<Matrix> matrixes)
+        {
+            matrixes.AsParallel()
+                .Select(m2 => m1.Multiply(m2))
+                .ToList();
         }
 
         private static void TwoMatrixesMultiplication()
