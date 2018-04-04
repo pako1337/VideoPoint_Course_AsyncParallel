@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Parallel_Matrixes
@@ -131,6 +132,41 @@ namespace Parallel_Matrixes
             }
 
             Task.WaitAll(tasks.ToArray());
+
+            return new Matrix(resultMatrix);
+        }
+
+        public Matrix MultiplyParallelRowManualThreadPool(Matrix other)
+        {
+            var resultMatrix = new int[Rows][];
+            var taskCount = 0;
+
+            for (int i = 0; i < Rows; i++)
+            {
+                var counter = i;
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    resultMatrix[counter] = new int[other.Cols];
+
+                    for (int j = 0; j < other.Cols; j++)
+                    {
+                        var result = 0;
+                        for (int k = 0; k < Cols; k++)
+                        {
+                            result += Values[counter][k] * other.Values[k][j];
+                        }
+
+                        resultMatrix[counter][j] = result;
+                    }
+
+                    Interlocked.Increment(ref taskCount);
+                });
+            }
+
+            while (taskCount < Rows)
+            {
+
+            }
 
             return new Matrix(resultMatrix);
         }

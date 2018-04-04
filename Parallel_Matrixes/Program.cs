@@ -20,6 +20,7 @@ namespace Parallel_Matrixes
             processingTimes["Parallel RowsCols"] = Measure(() => m1.MultiplyParallelRowsCols(m2));
             processingTimes["Parallel Cols"] = Measure(() => m1.MultiplyParallelCols(m2));
             processingTimes["Prallel Rows Manual"] = Measure(() => m1.MultiplyParallelRowManual(m2));
+            processingTimes["Prallel Rows Thread Pool"] = Measure(() => m1.MultiplyParallelRowManualThreadPool(m2));
 
             PrintSpeedup(baseTime, processingTimes);
         }
