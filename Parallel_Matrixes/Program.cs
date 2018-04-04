@@ -15,7 +15,9 @@ namespace Parallel_Matrixes
         {
             //TwoMatrixesMultiplication();
 
-            ListOfMatrixesMultiplication();
+            //ListOfMatrixesMultiplication();
+
+            Synchronisation.MultiplyMatrixes();
         }
 
         private static void ListOfMatrixesMultiplication()
