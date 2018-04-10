@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Console;
@@ -16,13 +17,12 @@ namespace Parallel_Matrixes
 
         public static void MultiplyMatrixes()
         {
-            Task.Run(GenerateMatrixesPeriodically);
+            var generator = Task.Run(GenerateMatrixesPeriodically);
+            var multiplicator1 = Task.Run((Action)Multiply);
+            var multiplicator2 = Task.Run((Action)Multiply);
 
-            while (calculated < matrixCount)
-            {
-                Multiply();
-                PrintStatus();
-            }
+            Task.WhenAll(generator, multiplicator1, multiplicator2)
+                .Wait();
         }
 
         private static void PrintStatus()
@@ -43,12 +43,16 @@ namespace Parallel_Matrixes
 
         private static void Multiply()
         {
-            while (toCalculate.Count == 0)
-            { }
+            while (calculated < matrixCount)
+            {
+                while (toCalculate.Count == 0)
+                { }
 
-            var m2 = toCalculate.Dequeue();
-            m1.Multiply(m2);
-            Interlocked.Increment(ref calculated);
+                var m2 = toCalculate.Dequeue();
+                m1.Multiply(m2);
+                Interlocked.Increment(ref calculated);
+                PrintStatus();
+            }
         }
     }
 }
