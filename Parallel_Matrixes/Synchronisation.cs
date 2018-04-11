@@ -37,11 +37,12 @@ namespace Parallel_Matrixes
         {
             for (int i = 0; i < matrixCount; i++)
             {
+                Matrix item = MatrixGenerator.GenerateMatrix(matrixSize);
+
                 lock (sync)
                 {
-                    toCalculate.Enqueue(MatrixGenerator.GenerateMatrix(matrixSize));
+                    toCalculate.Enqueue(item);
                 }
-                await Task.Delay(100);
             }
         }
 
@@ -49,12 +50,20 @@ namespace Parallel_Matrixes
         {
             while (calculated < matrixCount)
             {
+                Matrix m2 = null;
+                while (toCalculate.Count == 0)
+                { }
+
                 lock (sync)
                 {
-                    while (toCalculate.Count == 0)
-                    { }
+                    if (toCalculate.Count > 0)
+                    {
+                        m2 = toCalculate.Dequeue();
+                    }
+                }
 
-                    var m2 = toCalculate.Dequeue();
+                if (m2 != null)
+                {
                     m1.Multiply(m2);
                     Interlocked.Increment(ref calculated);
                     PrintStatus();
