@@ -14,6 +14,7 @@ namespace Parallel_Matrixes
 
         private static Queue<Matrix> toCalculate = new Queue<Matrix>();
         private static int calculated = 0;
+        private static object sync = new object();
 
         public static void MultiplyMatrixes()
         {
@@ -36,7 +37,10 @@ namespace Parallel_Matrixes
         {
             for (int i = 0; i < matrixCount; i++)
             {
-                toCalculate.Enqueue(MatrixGenerator.GenerateMatrix(matrixSize));
+                lock (sync)
+                {
+                    toCalculate.Enqueue(MatrixGenerator.GenerateMatrix(matrixSize));
+                }
                 await Task.Delay(100);
             }
         }
@@ -45,13 +49,16 @@ namespace Parallel_Matrixes
         {
             while (calculated < matrixCount)
             {
-                while (toCalculate.Count == 0)
-                { }
+                lock (sync)
+                {
+                    while (toCalculate.Count == 0)
+                    { }
 
-                var m2 = toCalculate.Dequeue();
-                m1.Multiply(m2);
-                Interlocked.Increment(ref calculated);
-                PrintStatus();
+                    var m2 = toCalculate.Dequeue();
+                    m1.Multiply(m2);
+                    Interlocked.Increment(ref calculated);
+                    PrintStatus();
+                }
             }
         }
     }
