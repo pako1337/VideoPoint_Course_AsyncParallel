@@ -14,7 +14,7 @@ namespace Parallel_Matrixes
 
         private static Queue<Matrix> toCalculate = new Queue<Matrix>();
         private static int calculated = 0;
-        private static object sync = new object();
+        private static Semaphore semaphore = new Semaphore(0, matrixCount);
 
         public static void MultiplyMatrixes()
         {
@@ -39,10 +39,8 @@ namespace Parallel_Matrixes
             {
                 Matrix item = MatrixGenerator.GenerateMatrix(matrixSize);
 
-                lock (sync)
-                {
-                    toCalculate.Enqueue(item);
-                }
+                toCalculate.Enqueue(item);
+                semaphore.Release();
             }
         }
 
@@ -52,22 +50,16 @@ namespace Parallel_Matrixes
             {
                 Matrix m2 = null;
 
-                if (toCalculate.Count > 0)
+                if (semaphore.WaitOne(100))
                 {
-                    lock (sync)
-                    {
-                        if (toCalculate.Count > 0)
-                        {
-                            m2 = toCalculate.Dequeue();
-                        }
-                    }
-                }
+                    m2 = toCalculate.Dequeue();
 
-                if (m2 != null)
-                {
-                    m1.Multiply(m2);
-                    Interlocked.Increment(ref calculated);
-                    PrintStatus();
+                    if (m2 != null)
+                    {
+                        m1.Multiply(m2);
+                        Interlocked.Increment(ref calculated);
+                        PrintStatus();
+                    }
                 }
             }
         }
