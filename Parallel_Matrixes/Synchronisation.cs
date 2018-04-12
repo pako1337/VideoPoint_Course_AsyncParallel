@@ -28,9 +28,9 @@ namespace Parallel_Matrixes
 
         private static void PrintStatus()
         {
-            Write("Queue size: " + toCalculate.Count.ToString().PadLeft(4));
-            Write("\tCalculated: " + calculated.ToString().PadLeft(4));
-            WriteLine();
+            WriteLine(
+                "Queue size: " + toCalculate.Count.ToString().PadLeft(4)
+                + "\tCalculated: " + calculated.ToString().PadLeft(4));
         }
 
         private static async Task GenerateMatrixesPeriodically()
@@ -51,14 +51,15 @@ namespace Parallel_Matrixes
             while (calculated < matrixCount)
             {
                 Matrix m2 = null;
-                while (toCalculate.Count == 0)
-                { }
 
-                lock (sync)
+                if (toCalculate.Count > 0)
                 {
-                    if (toCalculate.Count > 0)
+                    lock (sync)
                     {
-                        m2 = toCalculate.Dequeue();
+                        if (toCalculate.Count > 0)
+                        {
+                            m2 = toCalculate.Dequeue();
+                        }
                     }
                 }
 
