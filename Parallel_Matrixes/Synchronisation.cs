@@ -14,7 +14,7 @@ namespace Parallel_Matrixes
 
         private static Queue<Matrix> toCalculate = new Queue<Matrix>();
         private static int calculated = 0;
-        private static Semaphore semaphore = new Semaphore(0, matrixCount);
+        private static SemaphoreSlim semaphore = new SemaphoreSlim(0, matrixCount);
 
         public static void MultiplyMatrixes()
         {
@@ -50,7 +50,7 @@ namespace Parallel_Matrixes
             {
                 Matrix m2 = null;
 
-                if (semaphore.WaitOne(100))
+                if (semaphore.Wait(100))
                 {
                     m2 = toCalculate.Dequeue();
 
