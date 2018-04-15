@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,8 @@ namespace Parallel_Matrixes
         private const int matrixSize = 100;
         private static readonly Matrix m1 = MatrixGenerator.GenerateMatrix(matrixSize);
 
-        private static Queue<Matrix> toCalculate = new Queue<Matrix>();
+        private static ConcurrentQueue<Matrix> toCalculate = new ConcurrentQueue<Matrix>();
         private static int calculated = 0;
-        private static Mutex mutex = new Mutex();
 
         public static void MultiplyMatrixes()
         {
@@ -39,15 +39,7 @@ namespace Parallel_Matrixes
             {
                 Matrix item = MatrixGenerator.GenerateMatrix(matrixSize);
 
-                try
-                {
-                    mutex.WaitOne();
-                    toCalculate.Enqueue(item);
-                }
-                finally
-                {
-                    mutex.ReleaseMutex();
-                }
+                toCalculate.Enqueue(item);
             }
         }
 
@@ -57,23 +49,7 @@ namespace Parallel_Matrixes
             {
                 Matrix m2 = null;
 
-                if (toCalculate.Count > 0)
-                {
-                    try
-                    {
-                        mutex.WaitOne();
-                        if (toCalculate.Count > 0)
-                        {
-                            m2 = toCalculate.Dequeue();
-                        }
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
-
-                if (m2 != null)
+                if (toCalculate.TryDequeue(out m2))
                 {
                     m1.Multiply(m2);
                     Interlocked.Increment(ref calculated);
