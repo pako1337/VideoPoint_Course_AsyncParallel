@@ -26,11 +26,11 @@ namespace Parallel_Matrixes
                 .Wait();
         }
 
-        private static void PrintStatus()
+        private static void PrintStatus(int resultedCount)
         {
             WriteLine(
                 "Queue size: " + toCalculate.Count.ToString().PadLeft(4)
-                + "\tCalculated: " + calculated.ToString().PadLeft(4));
+                + "\tCalculated: " + resultedCount.ToString().PadLeft(4));
         }
 
         private static async Task GenerateMatrixesPeriodically()
@@ -52,8 +52,8 @@ namespace Parallel_Matrixes
                 if (toCalculate.TryDequeue(out m2))
                 {
                     m1.Multiply(m2);
-                    Interlocked.Increment(ref calculated);
-                    PrintStatus();
+                    var resultedCount = Interlocked.Increment(ref calculated);
+                    PrintStatus(resultedCount);
                 }
             }
         }
