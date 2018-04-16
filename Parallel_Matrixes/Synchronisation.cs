@@ -13,7 +13,7 @@ namespace Parallel_Matrixes
         private const int matrixSize = 100;
         private static readonly Matrix m1 = MatrixGenerator.GenerateMatrix(matrixSize);
 
-        private static ConcurrentQueue<Matrix> toCalculate = new ConcurrentQueue<Matrix>();
+        private static BlockingCollection<Matrix> toCalculate = new BlockingCollection<Matrix>(new ConcurrentQueue<Matrix>());
         private static int calculated = 0;
 
         public static void MultiplyMatrixes()
@@ -39,7 +39,8 @@ namespace Parallel_Matrixes
             {
                 Matrix item = MatrixGenerator.GenerateMatrix(matrixSize);
 
-                toCalculate.Enqueue(item);
+                toCalculate.TryAdd(item);
+                await Task.Delay(100);
             }
         }
 
@@ -49,11 +50,15 @@ namespace Parallel_Matrixes
             {
                 Matrix m2 = null;
 
-                if (toCalculate.TryDequeue(out m2))
+                if (toCalculate.TryTake(out m2, 300))
                 {
                     m1.Multiply(m2);
                     var resultedCount = Interlocked.Increment(ref calculated);
                     PrintStatus(resultedCount);
+                }
+                else
+                {
+                    WriteLine("Failed to dequeue item");
                 }
             }
         }
