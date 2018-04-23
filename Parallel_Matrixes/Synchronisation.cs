@@ -17,7 +17,9 @@ namespace Parallel_Matrixes
 
         private static BlockingCollection<Matrix> toCalculate = new BlockingCollection<Matrix>(new ConcurrentQueue<Matrix>());
         private static ConcurrentDictionary<long, int> timeHistogram = new ConcurrentDictionary<long, int>();
+        private static ConcurrentBag<Matrix> secondLevel = new ConcurrentBag<Matrix>();
         private static int calculated = 0;
+        private static int secondCalculated = 0;
 
         public static void MultiplyMatrixes()
         {
@@ -64,9 +66,10 @@ namespace Parallel_Matrixes
                 {
                     var watch = new Stopwatch();
                     watch.Start();
-                    m1.Multiply(m2);
+                    var result = m1.Multiply(m2);
                     watch.Stop();
                     var resultedCount = Interlocked.Increment(ref calculated);
+                    secondLevel.Add(result);
 
                     timeHistogram.AddOrUpdate(watch.ElapsedMilliseconds, 1, (k, v) => v + 1);
 
@@ -75,6 +78,17 @@ namespace Parallel_Matrixes
                 else
                 {
                     WriteLine("Failed to dequeue item");
+                }
+            }
+
+            while (secondCalculated < matrixCount)
+            {
+                Matrix m2 = null;
+                if (secondLevel.TryTake(out m2))
+                {
+                    m1.Multiply(m2);
+                    var calculatedCount = Interlocked.Increment(ref secondCalculated);
+                    WriteLine("Second level calculated: " + calculatedCount);
                 }
             }
         }
