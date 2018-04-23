@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Console;
@@ -14,6 +16,7 @@ namespace Parallel_Matrixes
         private static readonly Matrix m1 = MatrixGenerator.GenerateMatrix(matrixSize);
 
         private static BlockingCollection<Matrix> toCalculate = new BlockingCollection<Matrix>(new ConcurrentQueue<Matrix>());
+        private static ConcurrentDictionary<long, int> timeHistogram = new ConcurrentDictionary<long, int>();
         private static int calculated = 0;
 
         public static void MultiplyMatrixes()
@@ -24,13 +27,21 @@ namespace Parallel_Matrixes
 
             Task.WhenAll(generator, multiplicator1, multiplicator2)
                 .Wait();
+
+            foreach (var timeValue in timeHistogram.OrderBy(t => t.Key))
+            {
+                WriteLine($"Time: {timeValue.Key} \tValue {timeValue.Value}");
+            }
+
+            WriteLine("Value count: " + timeHistogram.Values.Sum());
         }
 
-        private static void PrintStatus(int resultedCount)
+        private static void PrintStatus(int resultedCount, long timeElapsed)
         {
             WriteLine(
                 "Queue size: " + toCalculate.Count.ToString().PadLeft(4)
-                + "\tCalculated: " + resultedCount.ToString().PadLeft(4));
+                + "\tCalculated: " + resultedCount.ToString().PadLeft(4)
+                + "\tTime: " + timeElapsed.ToString().PadLeft(4));
         }
 
         private static async Task GenerateMatrixesPeriodically()
@@ -40,7 +51,6 @@ namespace Parallel_Matrixes
                 Matrix item = MatrixGenerator.GenerateMatrix(matrixSize);
 
                 toCalculate.TryAdd(item);
-                await Task.Delay(100);
             }
         }
 
@@ -52,9 +62,15 @@ namespace Parallel_Matrixes
 
                 if (toCalculate.TryTake(out m2, 300))
                 {
+                    var watch = new Stopwatch();
+                    watch.Start();
                     m1.Multiply(m2);
+                    watch.Stop();
                     var resultedCount = Interlocked.Increment(ref calculated);
-                    PrintStatus(resultedCount);
+
+                    timeHistogram.AddOrUpdate(watch.ElapsedMilliseconds, 1, (k, v) => v + 1);
+
+                    PrintStatus(resultedCount, watch.ElapsedMilliseconds);
                 }
                 else
                 {
